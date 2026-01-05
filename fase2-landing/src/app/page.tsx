@@ -172,7 +172,7 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
               <>
                 <p className="text-xl text-gray-600">
                   <span className="font-semibold text-gray-900">{user.name}</span>, estás en el{' '}
-                  <span className="font-bold text-amber-600">top {100 - progress.progresoTotal.toFixed(0)}%</span> de docentes más cerca de certificarse.
+                  <span className="font-bold text-amber-600">top {(100 - progress.progresoTotal).toFixed(0)}%</span> de docentes más cerca de certificarse.
                 </p>
                 <p className="text-2xl font-bold text-gray-800 mt-2">
                   Llevas <span className="text-green-600">{progress.progresoTotal.toFixed(0)}%</span> completado.
