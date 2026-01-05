@@ -136,12 +136,13 @@ export function calcularProgreso(createdAt: Date | string): ProgresoData {
  */
 export function calcularProgresoHaciaFecha(fechaFin: string, fechaInicioStr?: string): ProgresoData {
   const ahora = new Date()
-  const fechaObjetivo = new Date(fechaFin)
+  // Agregar T12:00:00 para evitar problemas de zona horaria
+  const fechaObjetivo = new Date(fechaFin + 'T12:00:00')
 
   // Usar fecha de inicio proporcionada o calcular 12 meses antes
   let fechaInicio: Date
   if (fechaInicioStr) {
-    fechaInicio = new Date(fechaInicioStr)
+    fechaInicio = new Date(fechaInicioStr + 'T12:00:00')
   } else {
     fechaInicio = new Date(fechaObjetivo)
     fechaInicio.setMonth(fechaInicio.getMonth() - 12)
@@ -204,7 +205,8 @@ export function getProgreso100Completado(fechaFin?: string): ProgresoData {
   let fechaEntrega: string | undefined
 
   if (fechaFin) {
-    const fecha = new Date(fechaFin)
+    // Agregar T12:00:00 para evitar problemas de zona horaria
+    const fecha = new Date(fechaFin + 'T12:00:00')
     fechaEntrega = format(fecha, "d 'de' MMMM 'de' yyyy", { locale: es })
   }
 

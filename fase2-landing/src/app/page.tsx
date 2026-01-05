@@ -160,27 +160,31 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
                   🎉 ¡Felicidades, <span className="text-green-600">{user.name}</span>!
                 </p>
                 <p className="text-xl text-gray-600">
-                  Lo lograste. Has completado el <span className="font-bold text-green-600">100%</span> de tu formación.
+                  Lo lograste. Eres parte del <span className="font-bold text-green-600">3% de docentes</span> que completan su certificación.
                 </p>
                 {progress.fechaEntrega && (
                   <p className="text-lg text-amber-600 font-semibold mt-3 bg-amber-50 rounded-lg py-3 px-4 inline-block">
-                    📜 Tu diplomado llegará el <span className="font-bold">{progress.fechaEntrega}</span>
+                    📜 Tu diplomado físico llegará el <span className="font-bold">{progress.fechaEntrega}</span>
                   </p>
                 )}
               </>
             ) : (
               <>
                 <p className="text-xl text-gray-600">
-                  <span className="font-semibold text-gray-900">{user.name}</span>, ya superaste la primera barrera. Llevas{' '}
-                  <span className="font-bold text-green-600">{progress.progresoTotal.toFixed(0)}%</span> del camino.
+                  <span className="font-semibold text-gray-900">{user.name}</span>, estás en el{' '}
+                  <span className="font-bold text-amber-600">top {100 - progress.progresoTotal.toFixed(0)}%</span> de docentes más cerca de certificarse.
+                </p>
+                <p className="text-2xl font-bold text-gray-800 mt-2">
+                  Llevas <span className="text-green-600">{progress.progresoTotal.toFixed(0)}%</span> completado.
                 </p>
                 {progress.fechaEntrega ? (
-                  <p className="text-lg text-gray-500">
-                    Tu certificado estará listo el <span className="font-semibold text-amber-600">{progress.fechaEntrega}</span>. ¡Ya falta poco!
+                  <p className="text-lg text-gray-500 mt-2">
+                    <span className="font-semibold text-red-500">Fecha límite:</span> Tu certificado se emite el{' '}
+                    <span className="font-bold text-amber-600">{progress.fechaEntrega}</span>. No pierdas tu lugar.
                   </p>
                 ) : (
                   <p className="text-lg text-gray-500">
-                    Tu certificación de San Marcos está cada vez más cerca.
+                    Solo el <span className="font-semibold">3% de docentes</span> llegan al final. Tú ya estás aquí.
                   </p>
                 )}
               </>
