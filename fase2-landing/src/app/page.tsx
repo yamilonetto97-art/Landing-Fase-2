@@ -180,7 +180,7 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
                 {progress.fechaEntrega ? (
                   <p className="text-lg text-gray-500 mt-2">
                     <span className="font-semibold text-red-500">Fecha límite:</span> Tu certificado se emite el{' '}
-                    <span className="font-bold text-amber-600">{progress.fechaEntrega}</span>. No pierdas tu lugar.
+                    <span className="font-bold text-amber-600">{progress.fechaEntrega}</span>.
                   </p>
                 ) : (
                   <p className="text-lg text-gray-500">
