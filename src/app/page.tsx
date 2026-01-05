@@ -142,7 +142,7 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
             transition={{ delay: 0.3, duration: 0.6 }}
           >
             <ProgressBar
-              progress={progress.progresoDentroFase}
+              progress={progress.progresoTotal}
               fase={progress.fase}
             />
           </motion.div>

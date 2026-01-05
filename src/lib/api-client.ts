@@ -32,7 +32,8 @@ export function getDocenteFromURL(searchParams: URLSearchParams): ProgressRespon
     progress = getProgreso100Completado(fechaFin || undefined)
   } else if (fechaFin) {
     // Modo fecha fin específica (ej: 28 de febrero 2026)
-    progress = calcularProgresoHaciaFecha(fechaFin)
+    // Si hay fecha inicio (f), usarla; sino calcularProgresoHaciaFecha usa 12 meses antes
+    progress = calcularProgresoHaciaFecha(fechaFin, fecha || undefined)
   } else {
     // Modo normal: 12 meses desde fecha de inicio
     progress = calcularProgreso(fecha!)

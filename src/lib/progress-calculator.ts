@@ -131,15 +131,21 @@ export function calcularProgreso(createdAt: Date | string): ProgresoData {
  * Usado para "Docentes 28 de febrero" - fecha fija de entrega del diploma.
  *
  * @param fechaFin - Fecha de finalización (ej: "2026-02-28")
+ * @param fechaInicioStr - Fecha de inicio opcional (si no se proporciona, usa 12 meses antes)
  * @returns Datos de progreso calculados hacia esa fecha
  */
-export function calcularProgresoHaciaFecha(fechaFin: string): ProgresoData {
+export function calcularProgresoHaciaFecha(fechaFin: string, fechaInicioStr?: string): ProgresoData {
   const ahora = new Date()
   const fechaObjetivo = new Date(fechaFin)
 
-  // Calcular fecha de inicio asumiendo un periodo de 12 meses antes de la fecha fin
-  const fechaInicio = new Date(fechaObjetivo)
-  fechaInicio.setMonth(fechaInicio.getMonth() - 12)
+  // Usar fecha de inicio proporcionada o calcular 12 meses antes
+  let fechaInicio: Date
+  if (fechaInicioStr) {
+    fechaInicio = new Date(fechaInicioStr)
+  } else {
+    fechaInicio = new Date(fechaObjetivo)
+    fechaInicio.setMonth(fechaInicio.getMonth() - 12)
+  }
 
   const diasTotalesPrograma = differenceInDays(fechaObjetivo, fechaInicio)
   const diasTranscurridos = differenceInDays(ahora, fechaInicio)
@@ -154,19 +160,22 @@ export function calcularProgresoHaciaFecha(fechaFin: string): ProgresoData {
   const mesesTotales = diasTranscurridos / 30
   const mesesRestantes = diasRestantes / 30
 
-  // Determinar fase
+  // Determinar fase - AJUSTADO para que 80% sea naranja (fase 2)
+  // Fase 1 (azul): < 30%
+  // Fase 2 (naranja): 30-90% <- Incluye el ~80% típico de docentes 28 feb
+  // Fase 3 (verde): >= 90%
   let fase: 1 | 2 | 3 = 1
   let progresoDentroFase: number = 0
 
-  if (progresoTotal < 40) {
+  if (progresoTotal < 30) {
     fase = 1
-    progresoDentroFase = (progresoTotal / 40) * 100
-  } else if (progresoTotal < 75) {
+    progresoDentroFase = (progresoTotal / 30) * 100
+  } else if (progresoTotal < 90) {
     fase = 2
-    progresoDentroFase = ((progresoTotal - 40) / 35) * 100
+    progresoDentroFase = ((progresoTotal - 30) / 60) * 100
   } else {
     fase = 3
-    progresoDentroFase = ((progresoTotal - 75) / 25) * 100
+    progresoDentroFase = ((progresoTotal - 90) / 10) * 100
   }
 
   // Formatear fecha de entrega
