@@ -13,7 +13,7 @@ export interface ProgresoData {
   diasTotales: number
   /** Porcentaje de progreso dentro de la fase actual (0-100) */
   progresoDentroFase: number
-  /** Porcentaje de progreso total - MEJORADO con curva de retención (0-100) */
+  /** Porcentaje de progreso total REAL basado en tiempo (0-100) */
   progresoTotal: number
   /** Días restantes para completar el journey de 12 meses */
   diasRestantes: number
@@ -24,47 +24,19 @@ export interface ProgresoData {
 }
 
 /**
- * Aplica curva de progreso psicológico para mejorar retención.
- *
- * TÉCNICA: "Efecto de Progreso Dotado" (Endowed Progress Effect)
- * Investigación: Nunes & Drèze (2006) - Las personas completan más tareas
- * cuando sienten que ya tienen un avance inicial.
- *
- * FÓRMULA: 12 + (88 × (progreso_real)^0.6)
- *
- * COMPONENTES:
- * - 12% bonus inicial: Sensación de "ya empezaste con ventaja"
- * - Exponente 0.6: Curva que acelera progreso percibido al inicio
- * - Factor 88: Asegura que llegue exactamente a 100% al final
- *
- * RESULTADOS:
- * ┌─────────┬──────────────┬─────────────────┐
- * │ Mes     │ Progreso Real│ Progreso Mostrado│
- * ├─────────┼──────────────┼─────────────────┤
- * │ 0       │ 0%           │ 12%             │
- * │ 1       │ 8%           │ 29%             │
- * │ 2       │ 17%          │ 39%             │
- * │ 3       │ 25%          │ 47%             │
- * │ 4       │ 33%          │ 54%             │
- * │ 5       │ 42%          │ 60%             │
- * │ 6       │ 50%          │ 67%             │
- * │ 9       │ 75%          │ 83%             │
- * │ 12      │ 100%         │ 100%            │
- * └─────────┴──────────────┴─────────────────┘
- *
- * @param progresoReal - Progreso lineal real (0-100)
- * @returns Progreso percibido mejorado (0-100)
+ * NOTA: Se eliminó la "curva de retención psicológica" porque causaba confusión.
+ * 
+ * ANTES: Mostraba 12% incluso el día 0, inflando el progreso.
+ * AHORA: Progreso REAL basado en tiempo transcurrido.
+ * 
+ * Si seleccionas 1 mes y hoy es el día 1:
+ * - Progreso = (1/30) × 100 = 3%
+ * 
+ * Si seleccionas 1 mes y hoy es el día 15:
+ * - Progreso = (15/30) × 100 = 50%
+ * 
+ * Esto es más transparente y la barra refleja exactamente el tiempo real.
  */
-function aplicarCurvaRetencion(progresoReal: number): number {
-  // Normalizar a fracción (0-1)
-  const fraccion = Math.min(1, Math.max(0, progresoReal / 100))
-
-  // Aplicar curva: bonus inicial + curva potencial
-  const progresoMejorado = 12 + (88 * Math.pow(fraccion, 0.6))
-
-  // Asegurar límites válidos
-  return Math.min(100, Math.max(0, progresoMejorado))
-}
 
 /**
  * Calcula el progreso del docente basado en su fecha de registro.
@@ -74,8 +46,8 @@ function aplicarCurvaRetencion(progresoReal: number): number {
  * - Fase 2 (Resistencia): Meses 5-8 → Superar obstáculos (crítico)
  * - Fase 3 (Autoridad): Meses 9-12 → Consolidar expertise
  *
- * NOTA: El progreso total usa curva psicológica para retención.
- * Los tiempos (meses invertidos/restantes) son valores reales.
+ * NOTA: El progreso es REAL basado en tiempo transcurrido.
+ * No se aplica ninguna curva de retención artificial.
  *
  * @param createdAt Fecha de registro del usuario
  * @returns Datos de progreso calculados (con curva de retención aplicada)
@@ -105,11 +77,8 @@ export function calcularProgreso(createdAt: Date | string): ProgresoData {
     progresoDentroFase = ((mesesTotales - 9) / 4) * 100
   }
 
-  // Progreso real (lineal)
-  const progresoReal = Math.min(100, (mesesTotales / 12) * 100)
-
-  // Progreso mejorado con curva de retención psicológica
-  const progresoTotal = aplicarCurvaRetencion(progresoReal)
+  // Progreso REAL (lineal) - sin curvas artificiales
+  const progresoTotal = Math.min(100, (mesesTotales / 12) * 100)
 
   // Tiempos restantes (valores reales, no mejorados)
   const diasRestantes = Math.max(0, 360 - diasTotales)
@@ -152,11 +121,8 @@ export function calcularProgresoHaciaFecha(fechaFin: string, fechaInicioStr?: st
   const diasTranscurridos = differenceInDays(ahora, fechaInicio)
   const diasRestantes = Math.max(0, differenceInDays(fechaObjetivo, ahora))
 
-  // Progreso real basado en tiempo transcurrido
-  const progresoReal = Math.min(100, Math.max(0, (diasTranscurridos / diasTotalesPrograma) * 100))
-
-  // Aplicar curva de retención
-  const progresoTotal = aplicarCurvaRetencion(progresoReal)
+  // Progreso REAL basado en tiempo transcurrido - sin curvas artificiales
+  const progresoTotal = Math.min(100, Math.max(0, (diasTranscurridos / diasTotalesPrograma) * 100))
 
   const mesesTotales = diasTranscurridos / 30
   const mesesRestantes = diasRestantes / 30

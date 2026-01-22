@@ -160,7 +160,7 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
                   🎉 ¡Felicidades, <span className="text-green-600">{user.name}</span>!
                 </p>
                 <p className="text-xl text-gray-600">
-                  Lo lograste. Eres parte del <span className="font-bold text-green-600">3% de docentes</span> que completan su certificación.
+                  Lo lograste. Tu <span className="font-bold text-green-600">certificación oficial</span> de la Universidad San Marcos ya está lista.
                 </p>
                 {progress.fechaEntrega && (
                   <p className="text-lg text-amber-600 font-semibold mt-3 bg-amber-50 rounded-lg py-3 px-4 inline-block">
@@ -170,21 +170,39 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
               </>
             ) : (
               <>
+                {/* Mensaje principal con el nombre */}
                 <p className="text-xl text-gray-600">
-                  <span className="font-semibold text-gray-900">{user.name}</span>, estás en el{' '}
-                  <span className="font-bold text-amber-600">top {(100 - progress.progresoTotal).toFixed(0)}%</span> de docentes más cerca de certificarse.
+                  <span className="font-semibold text-gray-900">{user.name}</span>,{' '}
+                  {progress.progresoTotal < 25
+                    ? 'tu certificación ya comenzó 🚀'
+                    : progress.progresoTotal < 50
+                      ? 'vas por buen camino 💪'
+                      : progress.progresoTotal < 75
+                        ? '¡ya pasaste la mitad! 🔥'
+                        : '¡estás muy cerca del final! 🎯'}
                 </p>
+
+                {/* Porcentaje completado - DESTACADO */}
                 <p className="text-2xl font-bold text-gray-800 mt-2">
-                  Llevas <span className="text-green-600">{progress.progresoTotal.toFixed(0)}%</span> completado.
+                  Llevas <span className="text-amber-600">{progress.progresoTotal.toFixed(0)}%</span> completado.
                 </p>
-                {progress.fechaEntrega ? (
-                  <p className="text-lg text-gray-500 mt-2">
-                    <span className="font-semibold text-red-500">Fecha límite:</span> Tu certificado se emite el{' '}
-                    <span className="font-bold text-amber-600">{progress.fechaEntrega}</span>.
-                  </p>
-                ) : (
-                  <p className="text-lg text-gray-500">
-                    Solo el <span className="font-semibold">3% de docentes</span> llegan al final. Tú ya estás aquí.
+
+                {/* Mensaje motivador según porcentaje */}
+                <p className="text-lg text-gray-500 mt-1">
+                  {progress.progresoTotal < 25
+                    ? '¡Excelente inicio! Tu certificación de San Marcos está en camino.'
+                    : progress.progresoTotal < 50
+                      ? '¡Sigue así! Tu certificado está cada vez más cerca.'
+                      : progress.progresoTotal < 75
+                        ? '¡Más de la mitad! Tu esfuerzo está dando frutos.'
+                        : '¡La recta final! Tu certificado está a punto de llegar.'}
+                </p>
+
+                {/* Fecha de entrega */}
+                {progress.fechaEntrega && (
+                  <p className="text-lg text-gray-500 mt-3">
+                    <span className="font-semibold text-amber-600">📅 Fecha de entrega:</span>{' '}
+                    <span className="font-bold text-gray-700">{progress.fechaEntrega}</span>
                   </p>
                 )}
               </>
