@@ -35,16 +35,16 @@ export function Certificate({
           className="w-full rounded-lg"
         />
 
-        {/* Nombre del docente superpuesto - CENTRADO */}
+        {/* Nombre del docente superpuesto - POSICIONADO EN EL ÁREA DEL CERTIFICADO */}
         <span
           className="absolute font-bold text-gray-950 whitespace-nowrap"
           style={{
             top: '50%',
-            left: '50%',
+            left: '45%',
             transform: 'translateX(-50%)',
-            fontSize: 'clamp(10px, 1.8vw, 20px)',
+            fontSize: 'clamp(9px, 1.6vw, 18px)',
             fontFamily: 'serif',
-            letterSpacing: '0.02em',
+            letterSpacing: '0.01em',
             textShadow: '0 0 1px rgba(0,0,0,0.1)'
           }}
         >
@@ -77,11 +77,11 @@ export function Component() {
           className="absolute font-bold text-gray-950 whitespace-nowrap"
           style={{
             top: '50%',
-            left: '50%',
+            left: '45%',
             transform: 'translateX(-50%)',
-            fontSize: 'clamp(10px, 1.8vw, 20px)',
+            fontSize: 'clamp(9px, 1.6vw, 18px)',
             fontFamily: 'serif',
-            letterSpacing: '0.02em',
+            letterSpacing: '0.01em',
             textShadow: '0 0 1px rgba(0,0,0,0.1)'
           }}
         >
