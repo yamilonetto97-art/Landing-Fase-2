@@ -24,6 +24,12 @@ export interface ProgressResponse {
   isCompleted?: boolean
   /** Fecha objetivo de finalización (ej: "2026-02-28") */
   targetDate?: string
+  /** True si el progreso viene firmado por EPIC vía ?t=<JWT>. */
+  epicSource?: boolean
+  /** True si el `active_until` del docente ya venció (vista pausada). */
+  accessExpired?: boolean
+  /** Progreso bruto antes de la curva visual (solo cuando epicSource). */
+  rawProgress?: number
 }
 
 /**

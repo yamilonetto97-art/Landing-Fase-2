@@ -10,7 +10,7 @@ import { Confetti, type ConfettiRef } from "@/components/ui/confetti"
 import { CartoonButton } from "@/components/ui/cartoon-button"
 import { Certificate } from "@/components/ui/certificate"
 import { Typewriter } from "@/components/ui/typewriter-text"
-import { getDocenteFromURL, hasValidParams } from "@/lib/api-client"
+import { getDocenteFromURL, getDocenteFromJWT } from "@/lib/api-client"
 import type { ProgressResponse } from "@/types"
 
 // Datos de demo para desarrollo (cuando no hay parámetros)
@@ -36,9 +36,9 @@ const DEMO_DATA: ProgressResponse = {
 function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
   const confettiRef = useRef<ConfettiRef>(null)
 
-  // Obtener datos directamente de la URL (sin API)
-  const docenteData = getDocenteFromURL(searchParams)
-  const hasParams = hasValidParams(searchParams)
+  // Obtener datos: primero JWT firmado por EPIC, fallback a params legacy.
+  const epicData = getDocenteFromJWT(searchParams)
+  const docenteData = epicData || getDocenteFromURL(searchParams)
 
   // En desarrollo sin parámetros, usar demo
   const data = docenteData || (process.env.NODE_ENV === 'development' ? DEMO_DATA : null)
@@ -79,10 +79,10 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
     )
   }
 
-  const { user, progress, isCompleted, targetDate } = data
+  const { user, progress, isCompleted, accessExpired, epicSource, rawProgress } = data
 
   // Determinar mensaje según el estado
-  const is100Percent = isCompleted || progress.progresoTotal >= 100
+  const is100Percent = isCompleted || progress.progresoTotal >= 100 || (rawProgress !== undefined && rawProgress >= 100)
 
   return (
     <div className="relative min-h-screen">
@@ -154,27 +154,46 @@ function Fase2Inner({ searchParams }: { searchParams: URLSearchParams }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
+            {accessExpired && (
+              <div className="mb-4 inline-block bg-orange-50 border border-orange-200 rounded-lg py-2 px-4">
+                <p className="text-sm font-medium text-orange-700">
+                  ⚠️ Tu acceso al programa está pausado. Regulariza tu suscripción para seguir avanzando.
+                </p>
+              </div>
+            )}
             {is100Percent ? (
               <>
                 <p className="text-2xl text-gray-800 font-bold">
-                  🎉 ¡Felicidades, <span className="text-green-600">{user.name}</span>!
+                  🎓 ¡Felicidades, <span className="text-green-600">{user.name}</span>!
                 </p>
-                <p className="text-xl text-gray-600">
-                  Lo lograste. Has completado el <span className="font-bold text-green-600">100%</span> de tu formación.
+                <p className="text-xl text-gray-700">
+                  Has completado tu camino al <span className="font-bold text-green-600">100%</span>.
                 </p>
-                {progress.fechaEntrega && (
-                  <p className="text-lg text-amber-600 font-semibold mt-3 bg-amber-50 rounded-lg py-3 px-4 inline-block">
-                    📜 Tu diplomado llegará el <span className="font-bold">{progress.fechaEntrega}</span>
+                <div className="mt-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl py-5 px-6 inline-block">
+                  <p className="text-lg text-amber-800 font-semibold">
+                    📜 Comunícate con el equipo de Genera para proceder con la entrega de tu certificado UNMSM.
                   </p>
-                )}
+                  <a
+                    href="https://wa.me/51972148626?text=Hola%20equipo%20Genera%2C%20he%20completado%20mi%20camino%20al%20100%25%20y%20quiero%20recibir%20mi%20certificado%20UNMSM."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-3 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-5 rounded-full transition-colors"
+                  >
+                    💬 Escribir al equipo por WhatsApp
+                  </a>
+                </div>
               </>
             ) : (
               <>
                 <p className="text-xl text-gray-600">
-                  <span className="font-semibold text-gray-900">{user.name}</span>, ya superaste la primera barrera. Llevas{' '}
-                  <span className="font-bold text-green-600">{progress.progresoTotal.toFixed(0)}%</span> del camino.
+                  <span className="font-semibold text-gray-900">{user.name}</span>, ya estás en camino. Llevas{' '}
+                  <span className="font-bold text-green-600">{progress.progresoTotal.toFixed(0)}%</span> del recorrido.
                 </p>
-                {progress.fechaEntrega ? (
+                {epicSource ? (
+                  <p className="text-lg text-gray-500">
+                    Sigue usando tus herramientas en Genera; tu progreso avanza con cada sesión.
+                  </p>
+                ) : progress.fechaEntrega ? (
                   <p className="text-lg text-gray-500">
                     Tu certificado estará listo el <span className="font-semibold text-amber-600">{progress.fechaEntrega}</span>. ¡Ya falta poco!
                   </p>
@@ -257,7 +276,7 @@ function Fase2Content() {
   const searchParams = useSearchParams()
 
   // Crear key basado en los parámetros para forzar re-render si cambian
-  const paramsKey = `${searchParams.get('n')}-${searchParams.get('f')}-${searchParams.get('end')}-${searchParams.get('c')}`
+  const paramsKey = `${searchParams.get('t') ?? ''}-${searchParams.get('n')}-${searchParams.get('f')}-${searchParams.get('end')}-${searchParams.get('c')}`
 
   return <Fase2Inner key={paramsKey} searchParams={searchParams} />
 }
